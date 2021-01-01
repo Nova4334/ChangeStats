@@ -56,8 +56,8 @@ namespace ChangeStats {
         }
 
         private void OnPostLogin(PlayerPostLoginEventArgs e) {
-            if (config.userLoginHP.ContainsKey(e.Player.User.ID) && config.userLoginHP[e.Player.User.ID] != -1) {
-                SetStat(config.userLoginHP[e.Player.User.ID], e.Player, "hp");
+            if (config.userLoginHP.ContainsKey(e.Player.Account.ID) && config.userLoginHP[e.Player.Account.ID] != -1) {
+                SetStat(config.userLoginHP[e.Player.Account.ID], e.Player, "hp");
             }
         }
 
@@ -69,7 +69,7 @@ namespace ChangeStats {
             }
 
             if (Int32.TryParse(args.Parameters[0], out hp)) {
-                config.userLoginHP[args.Player.User.ID] = hp;
+                config.userLoginHP[args.Player.Account.ID] = hp;
 
                 SetStat(hp, args.Player, "hp");
 
@@ -203,13 +203,13 @@ namespace ChangeStats {
         }
 
         public TSPlayer FindPlayer(TSPlayer requestingPlayer, string targetPlayer) {
-            List<TSPlayer> players = TShock.Utils.FindPlayer(targetPlayer);
+            List<TSPlayer> players = TSPlayer.FindByNameOrID(targetPlayer);
 
             if (players.Count < 1) {
                 requestingPlayer.SendErrorMessage("No players found.");
                 return null;
             } else if (players.Count > 1) {
-                TShock.Utils.SendMultipleMatchError(requestingPlayer, players.Select(p => p.Name));
+                requestingPlayer.SendMultipleMatchError(players.Select(p => p.Name));
                 return null;
             } else {
                 return players[0];
